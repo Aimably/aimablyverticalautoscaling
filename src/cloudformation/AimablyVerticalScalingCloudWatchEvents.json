@@ -1,0 +1,38 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CloudFormation template for EventBridge 2 rules",
+    "Resources": {
+      "EventRule0": {
+        "Type": "AWS::Events::Rule",
+        "Properties": {
+          "EventBusName": "default",
+          "EventPattern": {
+            "source": ["aws.rds"],
+            "detail-type": ["RDS DB Instance Event"]
+          },
+          "Name": "_RDSInstanceStageChange",
+          "State": "ENABLED",
+          "Targets": [{
+            "Id": "Id7a5b601d-87f7-4d53-8d5a-7554be47429c",
+            "Arn": "arn:aws:lambda:us-east-1:339712808883:function:AimablyRDSVerticalScaling"
+          }]
+        }
+      },
+      "EventRule1": {
+        "Type": "AWS::Events::Rule",
+        "Properties": {
+          "EventBusName": "default",
+          "EventPattern": {
+            "source": ["aws.rds"],
+            "detail-type": ["RDS Blue Green Deployment Event"]
+          },
+          "Name": "_RDSBlueGreen",
+          "State": "ENABLED",
+          "Targets": [{
+            "Id": "Idfa0c2022-6191-4516-8f9d-b8f0368219eb",
+            "Arn": "arn:aws:lambda:us-east-1:339712808883:function:AimablyRDSVerticalScaling"
+          }]
+        }
+      }
+    }
+  }
