@@ -1,0 +1,31 @@
+{
+    "Type": "AWS::IAM::Policy",
+    "Properties": {
+        "PolicyName": "Policy 1",
+        "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "VisualEditor0",
+                    "Effect": "Allow",
+                    "Action": [
+                        "rds:AddTagsToResource",
+                        "iam:PassRole",
+                        "rds:CreateDBInstanceReadReplica",
+                        "rds:CreateBlueGreenDeployment",
+                        "rds:DescribeBlueGreenDeployments",
+                        "rds:SwitchoverBlueGreenDeployment",
+                        "rds:DeleteBlueGreenDeployment",
+                        "rds:DeleteDBInstance",
+                        "rds:DescribeDBInstances",
+                        "rds:ModifyDBInstance",
+                        "rds:PromoteReadReplica",
+                        "logs:*",
+                        "lambda:InvokeFunction"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        }
+    }
+}
