@@ -10,7 +10,9 @@
                     "Effect": "Allow",
                     "Action": [
                         "rds:AddTagsToResource",
+                        "rds:RemoveTagsFromResource",
                         "iam:PassRole",
+                        "rds:CreateDBInstance",
                         "rds:CreateDBInstanceReadReplica",
                         "rds:CreateBlueGreenDeployment",
                         "rds:DescribeBlueGreenDeployments",
@@ -20,6 +22,8 @@
                         "rds:DescribeDBInstances",
                         "rds:ModifyDBInstance",
                         "rds:PromoteReadReplica",
+                        "rds:DescribeDBClusters",
+                        "rds:FailoverDBCluster",
                         "logs:*",
                         "lambda:InvokeFunction"
                     ],

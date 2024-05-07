@@ -1,3 +1,17 @@
+"""
+This file is part of "Aimably Vertical Autoscaling".
+
+"Aimably Vertical Autoscaling" is free software: you can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+License, or (at your option) any later version.
+
+Aimably Vertical Autoscaling is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with Foobar. 
+If not, see <https://www.gnu.org/licenses/>.
+"""
 import pytest
 import os
 from moto import mock_aws
@@ -89,3 +103,134 @@ def scalingTags():
             { 'Key': 'rds_scaling_low_instanceclass', 'Value': 'db.t2.micro'},
             { 'Key': 'rds_scaling_high_instanceclass', 'Value': 'db.m5.large'}
         ]
+
+#Clusters
+@pytest.fixture()
+def createRdsClusterInstanceNoTags(aws):
+    boto3.client('rds').create_db_cluster(
+      DBClusterIdentifier = 'testclusterscaling',
+      DBClusterParameterGroupName = 'default.aurora-mysql5.7',
+      Engine = 'aurora-mysql',
+      MasterUsername = 'XXXX',
+      MasterUserPassword = 'XXXXXXXX',
+      Port = 3306,
+      DBSubnetGroupName = 'default',
+      VpcSecurityGroupIds = [ 'sg-XXXXXXXX' ],
+      DBClusterInstanceClass = 'db.t2.micro',
+      EngineMode = 'provisioned',
+      Tags = []
+    )
+
+@pytest.fixture()
+def createRdsClusterInstance(aws):
+    try:
+        r = boto3.client('rds').create_db_cluster(
+        DatabaseName = 'testclusterscaling',
+        DBClusterIdentifier = 'testclusterscaling',
+        DBClusterParameterGroupName = 'default.aurora-mysql5.7',
+        Engine = 'aurora-mysql',
+        EngineVersion = "8.0",
+        MasterUsername = 'XXXX',
+        MasterUserPassword = 'XXXXXXXX',
+        Port = 3306,
+        DBSubnetGroupName = 'default',
+        VpcSecurityGroupIds = [ 'sg-XXXXXXXX' ],
+        DBClusterInstanceClass = 'db.t2.micro',
+        Tags = [
+                { 'Key': 'rds_scaling_low_instanceclass', 'Value': 'db.t2.micro'},
+                { 'Key': 'rds_scaling_high_instanceclass', 'Value': 'db.m5.large'}
+            ]
+        )
+
+        boto3.client('rds').create_db_instance(
+        DBInstanceIdentifier = 'testclusterscaling-instance',
+        DBClusterIdentifier = 'testclusterscaling',
+        DBInstanceClass = 'db.t4g.medium',
+        Engine = 'aurora-mysql'
+        )
+    except Exception as e:
+        print(e)
+
+
+@pytest.fixture()
+def createRdsClusterInstanceMultipleInstances(aws):
+    try:
+        r = boto3.client('rds').create_db_cluster(
+        DatabaseName = 'testclusterscaling',
+        DBClusterIdentifier = 'testclusterscaling',
+        DBClusterParameterGroupName = 'default.aurora-mysql5.7',
+        Engine = 'aurora-mysql',
+        EngineVersion = "8.0",
+        MasterUsername = 'XXXX',
+        MasterUserPassword = 'XXXXXXXX',
+        Port = 3306,
+        DBSubnetGroupName = 'default',
+        VpcSecurityGroupIds = [ 'sg-XXXXXXXX' ],
+        DBClusterInstanceClass = 'db.t2.micro',
+        Tags = [
+                { 'Key': 'rds_scaling_low_instanceclass', 'Value': 'db.t2.micro'},
+                { 'Key': 'rds_scaling_high_instanceclass', 'Value': 'db.m5.large'}
+            ]
+        )
+
+        boto3.client('rds').create_db_instance(
+            DBInstanceIdentifier = 'testclusterscaling-instance',
+            DBClusterIdentifier = 'testclusterscaling',
+            DBInstanceClass = 'db.t4g.medium',
+            Engine = 'aurora-mysql'
+        )
+
+        boto3.client('rds').create_db_instance(
+            DBInstanceIdentifier = 'testclusterscaling-instance2',
+            DBClusterIdentifier = 'testclusterscaling',
+            DBInstanceClass = 'db.t4g.medium',
+            Engine = 'aurora-mysql'
+        )
+    except Exception as e:
+        print(e)
+
+@pytest.fixture()
+def createRdsClusterInstanceMultipleInstancesAtEnd(aws):
+    try:
+        r = boto3.client('rds').create_db_cluster(
+        DatabaseName = 'testclusterscaling',
+        DBClusterIdentifier = 'testclusterscaling',
+        DBClusterParameterGroupName = 'default.aurora-mysql5.7',
+        Engine = 'aurora-mysql',
+        EngineVersion = "8.0",
+        MasterUsername = 'XXXX',
+        MasterUserPassword = 'XXXXXXXX',
+        Port = 3306,
+        DBSubnetGroupName = 'default',
+        VpcSecurityGroupIds = [ 'sg-XXXXXXXX' ],
+        DBClusterInstanceClass = 'db.t2.micro',
+        Tags = [
+                { 'Key': 'rds_scaling_low_instanceclass', 'Value': 'db.t2.micro'},
+                { 'Key': 'rds_scaling_high_instanceclass', 'Value': 'db.m5.large'}
+            ]
+        )
+
+        boto3.client('rds').create_db_instance(
+            DBInstanceIdentifier = 'testclusterscaling-instance',
+            DBClusterIdentifier = 'testclusterscaling',
+            DBInstanceClass = 'db.t4g.large',
+            Engine = 'aurora-mysql',
+            Tags = [
+                { 'Key': 'rds_aurora_scaling', 'Value': 'original_writer'},
+                { 'Key': 'rds_aurora_scaling_target', 'Value': 'dbt4g.large'}
+            ]
+        )
+
+        boto3.client('rds').create_db_instance(
+            DBInstanceIdentifier = 'testclusterscaling-instance2',
+            DBClusterIdentifier = 'testclusterscaling',
+            DBInstanceClass = 'db.t4g.medium',
+            Engine = 'aurora-mysql',
+            Tags = [
+                { 'Key': 'rds_aurora_scaling', 'Value': 'original_writer'},
+                { 'Key': 'rds_aurora_scaling_target', 'Value': 'dbt4g.large'}
+            ]
+        )
+    except Exception as e:
+        print(e)
+

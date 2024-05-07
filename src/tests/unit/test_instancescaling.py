@@ -1,3 +1,17 @@
+"""
+This file is part of "Aimably Vertical Autoscaling".
+
+"Aimably Vertical Autoscaling" is free software: you can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+License, or (at your option) any later version.
+
+Aimably Vertical Autoscaling is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with Foobar. 
+If not, see <https://www.gnu.org/licenses/>.
+"""
 import unittest
 import datetime
 import tzlocal
@@ -5,18 +19,18 @@ import boto3
 from moto import mock_aws
 from tests.unit.fixtures.aws import *
 from tests.unit.fixtures.events import *
-from verticalscaling.bluegreenscaling import *
+from verticalscaling.scaling import *
 import pytest
 
 default_account = "123456789012"
 
 @mock_aws
 def test_start_blue_green_with_no_instances():
-    ScalingOperation(ScalingAction.ScaleUp).Scale(["testscaling"])
+    ScalingOperation(ScalingAction.ScaleUp).ScaleInstances(["testscaling"])
 
 @mock_aws
 def test_start_blue_green_with_one_instance(createRdsDBInstance):
-    ScalingOperation(ScalingAction.ScaleUp).Scale(["testscaling"])
+    ScalingOperation(ScalingAction.ScaleUp).ScaleInstances(["testscaling"])
 
 @mock_aws
 def test_tags_upper(scalingTags):
@@ -39,7 +53,7 @@ def test_no_change_same_instance_class(createRdsDBInstance):
 
 @mock_aws
 def test_no_change_same_instance_class(createRdsDBInstanceNoTags):
-    actions = ScalingOperation(ScalingAction.ScaleUp).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp).ScaleInstances(["testscaling"])
     assert len(actions) == 1
     assert actions[0] == ScalingStatus.NoOp
 
@@ -71,7 +85,7 @@ class BlueGreenBrigde_No_Deployments:
 
 @mock_aws
 def test_should_scale_up(createRdsDBInstance):
-    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_No_Deployments()).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_No_Deployments()).ScaleInstances(["testscaling"])
     assert len(actions) == 1
     assert actions[0] == ScalingStatus.Started
     # Dammit BlueGreen hasn't been implemented.
@@ -125,7 +139,7 @@ class BlueGreenBrigde_Deployments_Available:
 
 @mock_aws
 def test_should_scale_up_available(createRdsDBInstance, createGreenRdsDBInstance):
-    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_Available()).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_Available()).ScaleInstances(["testscaling"])
     assert len(actions) == 1
     assert actions[0] == ScalingStatus.InProgress
 
@@ -155,7 +169,7 @@ class BlueGreenBrigde_Deployments_Inprogress:
 
 @mock_aws
 def test_should_scale_up_inprogress(createRdsDBInstance, createGreenRdsDBInstance):
-    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_Inprogress()).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_Inprogress()).ScaleInstances(["testscaling"])
     assert len(actions) == 1
     assert actions[0] == ScalingStatus.InProgress
 
@@ -184,7 +198,7 @@ class BlueGreenBrigde_Deployments_Cleanup:
 
 @mock_aws
 def test_should_scale_up_cleanup(createRdsDBInstance, createGreenRdsDBInstance):
-    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_Cleanup()).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_Cleanup()).ScaleInstances(["testscaling"])
     assert len(actions) == 1
     assert actions[0] == ScalingStatus.Completed
     instances = boto3.client("rds").describe_db_instances()
@@ -192,7 +206,7 @@ def test_should_scale_up_cleanup(createRdsDBInstance, createGreenRdsDBInstance):
 
 @mock_aws
 def test_should_test_args(createRdsDBInstance, createGreenRdsDBInstance):
-    actions = ScalingOperation(ScalingAction.ScaleUp).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp).ScaleInstances(["testscaling"])
     assert len(actions) == 1
     assert actions[0] == ScalingStatus.NoOp
 
@@ -227,7 +241,7 @@ class BlueGreenBrigde_Deployments_RealResponses:
 
 @mock_aws
 def test_should_update_bluegreen(createRdsDBInstance, createGreenRdsDBInstance):
-    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_RealResponses()).Scale(["testscaling"])
+    actions = ScalingOperation(ScalingAction.ScaleUp, BlueGreenBrigde_Deployments_RealResponses()).ScaleInstances(["testscaling"])
     assert len(actions) == 1
 
 
