@@ -1,3 +1,17 @@
+"""
+This file is part of "Aimably Vertical Autoscaling".
+
+"Aimably Vertical Autoscaling" is free software: you can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+License, or (at your option) any later version.
+
+Aimably Vertical Autoscaling is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with Foobar. 
+If not, see <https://www.gnu.org/licenses/>.
+"""
 import boto3
 from aws_lambda_powertools.utilities.data_classes import EventBridgeEvent
 from aws_lambda_powertools.utilities.data_classes import cloud_watch_alarm_event
@@ -44,7 +58,18 @@ class EventHandler:
 
         try:
             self.action = event['action']
-            self.instances = event['instances']
+            try:
+                self.instances = event['instances']
+                self.subtype = 'instance'
+            except KeyError:
+                self.instances = []
+
+            try:
+                self.clusters = event['clusters']
+                self.subtype = 'cluster'
+            except KeyError:
+                self.clusters = []
+
             self.region = event['region']
             self.valid = True
 
@@ -59,28 +84,41 @@ class EventHandler:
     def _rdsevent(self, event):
         self.event = EventBridgeEvent(event)
         self.valid = True
+        self.subtype = "instance"
+        self.type = 'eventbridge'
         
         if "Blue Green" in self.event.detail_type:
-            self.type = 'bluegreen'
+            self.subtype = 'bluegreen'
             # Check for our tag.
             try:
                 self.valid = self.event.detail["Tags"][ScalingTag.BlueGreenTag] == "TRUE"
                     
             except (StopIteration, AttributeError, KeyError):
                 self.valid = False
-            
-        else:
-            self.type = 'eventbridge'
-
+        
+        elif "DB Cluster" in self.event.detail_type:
+            self.subtype = 'cluster'
+            if 'failover' in self.event.detail['Message']:
+                self.action = ScalingAction.Failover
+        
         self.region = self.event.region
         self.action = ScalingAction.NoOp
         self.instances = []
+        self.instancearns = []
+        self.clusters = []
 
         message = self.event.detail["Message"]
+
+        if 'failover' in message:
+            self.action = ScalingAction.Failover
         
         if "deleted" not in message:
             for resource in self.event.resources:
-                self.instances.append(resource.split(':')[-1])
+                if self.subtype == 'cluster':
+                    self.clusters.append(resource)
+                else:
+                    self.instancearns.append(resource)
+                    self.instances.append(resource.split(':')[-1])
 
     def _cloudwatch_alarm_event(self, event):
         self.event = cloud_watch_alarm_event.CloudWatchAlarmEvent(event)
@@ -121,10 +159,16 @@ class EventHandler:
         return self.type == 'eventbridge'
 
     def isBlueGreen(self):
-        return self.type == 'bluegreen'
+        return self.type == 'eventbridge' and self.subtype == 'bluegreen'
+
+    def isCluster(self):
+        return (self.type in ['eventbridge', 'custom']) and self.subtype == 'cluster'
     
     def getDBInstances(self):
         return self.instances
+
+    def getClusters(self):
+        return self.clusters
 
     def getAction(self):
         return self.action

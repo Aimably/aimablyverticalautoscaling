@@ -12,17 +12,10 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License along with Foobar. 
 If not, see <https://www.gnu.org/licenses/>.
 """
-class ScalingTag(object):
-    __slots__ = ()
-    LowerInstanceClass = "rds_scaling_low_instanceclass"
-    UpperInstanceClass = "rds_scaling_high_instanceclass"
-    AlertActionTag = 'rds_scaling_action'
-    BlueGreenTag = "rds_vertical_scaling_bluegreen"
-    AuroraScalingTag = "rds_aurora_scaling"
-    AuroraScalingTargetTag = "rds_aurora_scaling_target"
-    
-class AuroraTagValue(object):
-    __slots__ = ()
-    Read_Replica = 'read_replica'
-    Original_Writer = 'original_writer'
-    FailingOver = 'failing_over'
+class MissingTagsOnDatabase(Exception):
+    def __init__(self, message = ""):
+        super().__init__(message)
+        
+class InvalidScalingAction(Exception):
+    def __init__(self, message = ""):
+        super().__init__(message)

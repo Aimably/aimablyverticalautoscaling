@@ -14,7 +14,7 @@
           "State": "ENABLED",
           "Targets": [{
             "Id": "Id7a5b601d-87f7-4d53-8d5a-7554be47429c",
-            "Arn": "arn:aws:lambda:us-east-1:339712808883:function:AimablyRDSVerticalScaling"
+            "Arn": "arn:aws:lambda:us-east-1:123456789012:function:AimablyRDSVerticalScaling"
           }]
         }
       },
@@ -30,7 +30,7 @@
           "State": "ENABLED",
           "Targets": [{
             "Id": "Idfa0c2022-6191-4516-8f9d-b8f0368219eb",
-            "Arn": "arn:aws:lambda:us-east-1:339712808883:function:AimablyRDSVerticalScaling"
+            "Arn": "arn:aws:lambda:us-east-1:123456789012:function:AimablyRDSVerticalScaling"
           }]
         }
       }

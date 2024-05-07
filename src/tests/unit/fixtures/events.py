@@ -1,3 +1,17 @@
+"""
+This file is part of "Aimably Vertical Autoscaling".
+
+"Aimably Vertical Autoscaling" is free software: you can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+License, or (at your option) any later version.
+
+Aimably Vertical Autoscaling is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with Foobar. 
+If not, see <https://www.gnu.org/licenses/>.
+"""
 import pytest
 from moto import mock_aws
 import boto3
@@ -76,3 +90,20 @@ def blueGreenEvent():
 @pytest.fixture()
 def blueGreenEventDeletion():
   return {'version': '0', 'id': 'a4873fc1-f7b5-4e0f-a412-4c0ec1b457d0', 'detail-type': 'RDS Blue Green Deployment Event', 'source': 'aws.rds', 'account': '123456789012', 'time': '2024-04-30T02:01:29Z', 'region': 'us-east-1', 'resources': ['arn:aws:rds:us-east-1:123456789012:deployment:bgd-hdqs3ik6vrwgutsn'], 'detail': {'EventCategories': ['deletion'], 'SourceType': 'BLUE_GREEN_DEPLOYMENT', 'SourceArn': 'arn:aws:rds:us-east-1:123456789012:deployment:bgd-hdqs3ik6vrwgutsn', 'Date': '2024-04-30T02:01:29.568Z', 'Message': 'Blue/green deployment deleted.', 'SourceIdentifier': 'bgd-hdqs3ik6vrwgutsn', 'EventID': 'RDS-EVENT-0246'}}
+
+# DB Cluster Events
+@pytest.fixture()
+def auroraClusterStoppedEvent():
+  return {'version': '0', 'id': 'ca5edcb8-d149-ef91-b075-f0e9a6740d7f', 'detail-type': 'RDS DB Cluster Event', 'source': 'aws.rds', 'account': '123456789012', 'time': '2024-04-30T21:51:22Z', 'region': 'us-east-1', 'resources': ['arn:aws:rds:us-east-1:339712808883:cluster:auroratestscaling'], 'detail': {'EventCategories': ['notification'], 'SourceType': 'CLUSTER', 'SourceArn': 'arn:aws:rds:us-east-1:339712808883:cluster:auroratestscaling', 'Date': '2024-04-30T21:51:22.358Z', 'Message': 'DB cluster stopped', 'SourceIdentifier': 'auroratestscaling', 'EventID': 'RDS-EVENT-0150'}}
+
+@pytest.fixture()
+def userClusterScaleUp():
+  return {'source': 'custom', 'action': 'scaleup', 'region': 'us-east-1', 'clusters': [ 'testclusterscaling' ]}
+
+@pytest.fixture()
+def clusterFailoverCompletedEvent():
+  return {'version': '0', 'id': '2c5c9739-02be-610b-ab16-33a388360c78', 'detail-type': 'RDS DB Cluster Event', 'source': 'aws.rds', 'account': '339712808883', 'time': '2024-05-06T23:08:24Z', 'region': 'us-east-1', 'resources': ['arn:aws:rds:us-east-1:339712808883:cluster:auroratestscaling'], 'detail': {'EventCategories': ['failover'], 'SourceType': 'CLUSTER', 'SourceArn': 'arn:aws:rds:us-east-1:339712808883:cluster:auroratestscaling', 'Date': '2024-05-06T23:08:24.252Z', 'Message': 'Completed failover to DB instance: auroratestscaling-liqeq', 'SourceIdentifier': 'auroratestscaling', 'EventID': 'RDS-EVENT-0071', 'Tags': {'rds_scaling_low_instanceclass': 'db.t3.medium', 'rds_scaling_high_instanceclass': 'db.t3.large'}}}
+
+@pytest.fixture()
+def clusterStartedFailoverEvent():
+  return {'version': '0', 'id': '82bf3a7b-43d7-95e6-db0a-0b97af305ac2', 'detail-type': 'RDS DB Cluster Event', 'source': 'aws.rds', 'account': '339712808883', 'time': '2024-05-06T23:07:45Z', 'region': 'us-east-1', 'resources': ['arn:aws:rds:us-east-1:339712808883:cluster:auroratestscaling'], 'detail': {'EventCategories': ['failover'], 'SourceType': 'CLUSTER', 'SourceArn': 'arn:aws:rds:us-east-1:339712808883:cluster:auroratestscaling', 'Date': '2024-05-06T23:07:45.884Z', 'Message': 'Started same AZ failover to DB instance: auroratestscaling-liqeq', 'SourceIdentifier': 'auroratestscaling', 'EventID': 'RDS-EVENT-0072', 'Tags': {'rds_scaling_low_instanceclass': 'db.t3.medium', 'rds_scaling_high_instanceclass': 'db.t3.large'}}}
