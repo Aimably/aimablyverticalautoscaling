@@ -27,3 +27,6 @@ Users may choose to adjust the function to support more than two instance classe
 - You need administrator access to your AWS organization
 - Your database must make use of Self Managed credential management instead of AWS Secrets Manager
 - Aimably Database Instance Vertical Autoscaling is compatible with Amazon RDS for MySQL, Amazon RDS for PostgreSQL, Amazon RDS for MariaDB, Amazon Aurora for MySQL and Amazon Aurora for PostgreSQL.
+
+## Detailed Instructions
+- Non-Aurora RDS: https://github.com/Aimably/aimablyverticalautoscaling/blob/main/Aimably%20RDS%20Vertical%20Autoscaling%20Instructions%20%5BNon-Aurora%5D.pdf
