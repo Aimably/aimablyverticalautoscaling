@@ -30,3 +30,4 @@ Users may choose to adjust the function to support more than two instance classe
 
 ## Detailed Instructions
 - Non-Aurora RDS: https://github.com/Aimably/aimablyverticalautoscaling/blob/main/Aimably%20RDS%20Vertical%20Autoscaling%20Instructions%20%5BNon-Aurora%5D.pdf
+- Aurora: https://github.com/Aimably/aimablyverticalautoscaling/blob/main/Aimably%20Aurora%20Write%20Instance%20Vertical%20Autoscaling%20Instructions.pdf
